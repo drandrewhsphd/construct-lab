@@ -7,10 +7,10 @@ name = "construct-lab"
 version = "0.1.0"
 description = "Evidence and human decision records for construct development"
 requires-python = ">=3.9"
-dependencies = []
+dependencies = ["pypdf>=6.10,<7", "pypdfium2>=5.13,<6", "Pillow>=10,<13"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-construct_lab = ["app.html"]
+construct_lab = ["app.html", "library.html"]
