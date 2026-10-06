@@ -7,15 +7,18 @@ from pathlib import Path
 from urllib.parse import urlsplit, unquote
 
 from .library import LibraryStore, MAX_PDF, render_page
-from .review import ReviewStore
+from .extraction import ExtractionStore, Connection
 from .store import Conflict
 
 
 def make_server(database, port=8765):
     database = Path(database).resolve()
     database.parent.mkdir(parents=True, exist_ok=True)
-    store = ReviewStore(database)
+    store = ExtractionStore(database)
+    connection = Connection()
     try:
+        with store.db:
+            store.db.execute("UPDATE extraction_runs SET status='interrupted' WHERE status='running'")
         store.seed_curiosity()
     finally:
         store.close()
@@ -64,12 +67,18 @@ def make_server(database, port=8765):
                     body = raw if pdf_upload else json.loads(raw)
                     if not pdf_upload and not isinstance(body, dict):
                         raise ValueError("Expected a settings object")
-                if path in ("/", "/library", "/review") and not write:
-                    page_file = {"/": "app.html", "/library": "library.html", "/review": "review.html"}[path]
+                if path in ("/", "/library", "/review", "/extract") and not write:
+                    page_file = {"/": "app.html", "/library": "library.html", "/review": "review.html", "/extract": "extract.html"}[path]
                     self.respond(200, Path(__file__).with_name(page_file).read_bytes(), "text/html; charset=utf-8")
                     return
-                store = ReviewStore(database)
-                if len(parts) in (4,5) and parts[:2] == ["api", "projects"] and parts[3] == "passages":
+                store = ExtractionStore(database)
+                if path == '/api/ai/connection':
+                    result = (connection.clear() if body.get('disconnect') is True else connection.configure(body)) if write else connection.public()
+                elif len(parts) == 4 and parts[:2] == ['api','projects'] and parts[3] == 'extractions' and not write:
+                    result = store.runs(parts[2])
+                elif len(parts) == 6 and parts[:2] == ['api','projects'] and parts[3] == 'papers' and parts[5] == 'extract' and write:
+                    result = store.extract(parts[2], parts[4], body, connection.snapshot())
+                elif len(parts) in (4,5) and parts[:2] == ["api", "projects"] and parts[3] == "passages":
                     pid = parts[2]
                     if len(parts) == 4 and not write:
                         result = store.passages(pid)
