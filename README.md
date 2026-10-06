@@ -115,7 +115,44 @@ proposals can be revisited. Passage records preserve the PDF hash, citation snap
 PDF page, text version and character offsets. Later OCR does not rewrite a saved
 passage. Project exports include passages and OCR history, but not original PDF bytes.
 OCR errors, columns, symbols and reading order still require human checking.
-No AI extraction is connected yet.
+AI-assisted extraction is available through the passage-review screen; configure a provider before a live run.
+
+## AI-assisted extraction
+
+From passage review, choose **AI-assisted extraction**. Select OpenAI, an
+OpenAI-compatible API, or a local model. Enter the model identifier available to
+you and, for an external provider, its API key in the local password field.
+Compatible providers must support Chat Completions, JSON object mode and
+`max_completion_tokens`. Local models use a loopback HTTP endpoint; external
+providers require HTTPS. Redirects are refused so credentials cannot follow them.
+The adapter follows the [OpenAI Chat Completions reference](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create).
+
+Connection settings and keys stay in server memory, shared across this local
+application's tabs, and are cleared on disconnect or restart. They are not written
+to GitHub, browser storage, database or exports. Connecting does not test credentials.
+A live extraction sends the chosen page text and research focus to the configured
+provider, after the researcher authorizes that request in the interface. Provider
+usage may be billable. OpenAI requests set `store: false`; this does not promise
+zero retention under every provider/account policy. Provider credentials are
+separate from signing into ChatGPT or GitHub.
+
+Each request examines one PDF page (80–30,000 characters), with at most eight
+suggestions and 4,000 output tokens. The focus is editable for every project.
+Returned quotations must uniquely match a contiguous span of the saved page;
+invalid quotations, invalid categories and duplicates are skipped with reasons.
+Exact repeated requests reuse completed results. Failed requests can be retried
+manually; timeouts may still be charged. Runs interrupted by server restart are
+marked interrupted. Page changes during a request prevent saving stale proposals.
+
+Runs retain source text, citation and PDF hash, prompt/version, provider/model,
+usage when supplied, output, requester, and resulting passage IDs. This is a
+reproducibility record, not a guarantee of deterministic output. All suggestions
+remain proposed evidence and use the same original-PDF human-review gate. An exact
+quotation can still be misinterpreted. Empty results do not establish saturation.
+Project JSON exports include extraction history (schema 5); API keys are excluded.
+The automated provider tests use synthetic responses. A real provider requires
+credentials and an explicitly authorized live run; no live accuracy claim is made.
+This release does not perform cross-paper synthesis or automatic full-corpus runs.
 
 ## Run the checks
 
@@ -130,7 +167,7 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 1. Complete: project setup, reusable templates, version history, PDF batch import,
    original-page previews, citation review and page-level text extraction.
 2. Complete: local English OCR, source-linked passage selection and human review.
-   Next: connect AI-assisted extraction, retaining the same explicit review gate.
+   Complete: bounded AI-assisted page extraction with exact-quotation checks and explicit human review.
 3. Implement full construct proposals, materiality review, and version comparison.
 4. Implement evaluable evidence batches, configurable gates and challenge records.
 5. Add collaborator authentication, roles, access control and deployment.
@@ -151,5 +188,5 @@ Keep paper files, research exports, databases and API secrets out of Git. The
 not cryptographically tamper-proof. Local exports contain stored source passages;
 review source permissions before sharing them.
 
-No AI provider, API key, live literature service, or saturation calculation is
-connected yet. The software does not assert that a construct is saturated.
+An AI provider can be connected for the current server session. No live literature
+search service or saturation calculation is connected yet. The software does not assert that a construct is saturated.
