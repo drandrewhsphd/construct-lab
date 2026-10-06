@@ -6,7 +6,7 @@ No definition or evidence has been preapproved.
 
 ## Current status
 
-Working local project setup application with persistent settings, version history,
+Working local project setup and PDF library application with persistent settings, version history,
 and reusable templates. Curiosity is created on the first launch with its research
 choices left open. This is not yet a deployed or study-ready application.
 
@@ -20,13 +20,48 @@ Tests use synthetic fixtures only.
 From this repository folder, with Python 3.9 or later:
 
 ```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e .
 PYTHONPATH=src python3 -m construct_lab.server
 ```
 
-Open **http://127.0.0.1:8765** in your browser. No runtime packages, API keys or cloud
-accounts are needed for this local milestone. Stop the server with Ctrl+C; restart
+Open **http://127.0.0.1:8765** in your browser. PDF extraction uses the installed pypdf
+package; original page previews use PDFium and Pillow. No API keys or cloud accounts are needed. Stop the server with Ctrl+C; restart
 using the same command and directory to reopen the same saved research records.
 The server accepts connections only from this computer.
+
+If the port is already in use, add `--port 8767` and open that port instead.
+
+## Literature Library
+
+Choose **Open Literature Library** from project setup, or open `/library`.
+Select your project and upload up to 20 PDFs per batch (20 MB and 500 pages per PDF).
+Each file is processed independently: a damaged or encrypted file fails visibly
+without discarding successful imports. Identical files are deduplicated within each
+project. Files are not sent to any AI provider or external service. URL retrieval
+is not part of this release; save a PDF locally, then select it for upload.
+
+Select a paper to edit its citation and inspect the original beside extracted text.
+PDF metadata supplies initial title/author suggestions; other fields stay blank.
+Confirm bibliographic details only after checking them against the original. This
+does not verify scientific claims. Citation changes are versioned and recorded in
+the event history; stale edits are rejected. Matching DOIs flag possible alternate
+versions, which can coexist without being silently merged.
+
+Page locators are **PDF file page numbers**, not printed journal page numbers.
+Pages with fewer than 80 alphabetic characters are flagged for visual inspection;
+this is a heuristic, not an OCR or quality assessment. Empty/image/scanned pages and
+text extraction failures are visible. **OCR is not implemented yet.** Tables,
+columns, symbols and reading order require checking even when text is available.
+Extraction runs in a separate process with a one-minute timeout, page/text limits,
+and a worker memory cap on Linux. This is a local trusted-user application, not a
+production document sandbox.
+
+Original PDF bytes, hashes, citations and page text are stored transactionally in
+the same local SQLite database. Back up that database while the server is stopped.
+JSON exports include library records and text but not PDF bytes; download original
+PDFs from each paper's detail view. PDFs and local data remain outside GitHub.
 
 1. Open Curiosity and fill in the research brief, evidence plan and stopping plan.
    Unresolved fields may stay blank. Proposed batch counts are optional.
@@ -56,7 +91,7 @@ The proposed production behavior is in `docs/interface-specifications.md`.
 
 ## Run the checks
 
-Python 3.9 or later is required. No runtime packages are needed for these checks.
+Python 3.9 or later and the project dependencies above are required.
 
 ```sh
 PYTHONPATH=src python3 -m unittest discover -s tests -v
@@ -64,9 +99,9 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 ## Implementation sequence
 
-1. Complete: connect project setup, reusable templates and version history to
-   persistent records. Next: source ingestion and evidence review UI.
-2. Add document upload, parsing, passage anchors and verified AI extraction.
+1. Complete: project setup, reusable templates, version history, PDF batch import,
+   original-page previews, citation review and page-level text extraction.
+2. Add OCR for scanned papers, passage selection and reviewed AI extraction.
 3. Implement full construct proposals, materiality review, and version comparison.
 4. Implement evaluable evidence batches, configurable gates and challenge records.
 5. Add collaborator authentication, roles, access control and deployment.
