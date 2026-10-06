@@ -1,0 +1,6 @@
+{
+  "name": "construct-lab-local-ocr",
+  "private": true,
+  "description": "Local English OCR worker for Construct Lab",
+  "dependencies": { "tesseract.js": "7.0.0" }
+}
