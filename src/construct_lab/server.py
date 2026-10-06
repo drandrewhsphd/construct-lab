@@ -4,16 +4,16 @@ import json
 import sqlite3
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, unquote
 
-from .setup import SetupStore
+from .library import LibraryStore, MAX_PDF, render_page
 from .store import Conflict
 
 
 def make_server(database, port=8765):
     database = Path(database).resolve()
     database.parent.mkdir(parents=True, exist_ok=True)
-    store = SetupStore(database)
+    store = LibraryStore(database)
     try:
         store.seed_curiosity()
     finally:
@@ -30,13 +30,17 @@ def make_server(database, port=8765):
             self.send_header("Content-Length", str(len(data)))
             self.send_header("Cache-Control", "no-store")
             self.send_header("X-Content-Type-Options", "nosniff")
-            self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+            self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'self'; base-uri 'none'; form-action 'self'")
             if attachment:
                 self.send_header("Content-Disposition", 'attachment; filename="construct-lab-project.json"')
             self.end_headers()
             self.wfile.write(data)
 
         def handle_request(self, write=False):
+            self.connection.settimeout(90)
+            path = urlsplit(self.path).path
+            parts = path.strip("/").split("/")
+            pdf_upload = write and len(parts) == 4 and parts[:2] == ["api", "projects"] and parts[3] == "papers"
             port = self.server.server_port
             allowed_hosts = {f"127.0.0.1:{port}", f"localhost:{port}"}
             host = self.headers.get("Host", "")
@@ -45,7 +49,7 @@ def make_server(database, port=8765):
                 return
             if write and (self.headers.get("Origin") != f"http://{host}" or
                           self.headers.get("X-Construct-Lab") != "local" or
-                          self.headers.get("Content-Type", "").split(";")[0] != "application/json"):
+                          self.headers.get("Content-Type", "").split(";")[0] != ("application/pdf" if pdf_upload else "application/json")):
                 self.respond(403, {"error": "Open the local application to save settings"})
                 return
             store = None
@@ -53,18 +57,35 @@ def make_server(database, port=8765):
                 body = {}
                 if write:
                     length = int(self.headers.get("Content-Length", "0"))
-                    if not 0 < length <= 150000:
+                    if not 0 < length <= (MAX_PDF if pdf_upload else 150000):
                         raise ValueError("Request is empty or too large")
-                    body = json.loads(self.rfile.read(length))
-                    if not isinstance(body, dict):
+                    raw = self.rfile.read(length)
+                    body = raw if pdf_upload else json.loads(raw)
+                    if not pdf_upload and not isinstance(body, dict):
                         raise ValueError("Expected a settings object")
-                path = urlsplit(self.path).path
-                if path == "/" and not write:
-                    self.respond(200, Path(__file__).with_name("app.html").read_bytes(), "text/html; charset=utf-8")
+                if path in ("/", "/library") and not write:
+                    self.respond(200, Path(__file__).with_name("library.html" if path == "/library" else "app.html").read_bytes(), "text/html; charset=utf-8")
                     return
-                store = SetupStore(database)
-                parts = path.strip("/").split("/")
-                if path == "/api/state" and not write:
+                store = LibraryStore(database)
+                if len(parts) >= 4 and parts[:2] == ["api", "projects"] and parts[3] == "papers":
+                    pid = parts[2]
+                    if len(parts) == 4:
+                        result = store.import_pdf(pid, body, unquote(self.headers.get("X-Filename", "paper.pdf"))) if write else store.papers(pid)
+                    elif len(parts) == 5:
+                        result = store.update_citation(pid, parts[4], body.get("expected_version"), body.get("metadata"), body.get("actor"), body.get("confirmed")) if write else store.paper(pid, parts[4])
+                    elif len(parts) == 6 and parts[5] == "pdf" and not write:
+                        self.respond(200, store.original(pid, parts[4]), "application/pdf")
+                        return
+                    elif len(parts) == 7 and parts[5] == "pages" and not write:
+                        paper = store.paper(pid, parts[4])
+                        number = int(parts[6])
+                        if not 1 <= number <= len(paper["pages"]):
+                            raise KeyError("PDF page not found")
+                        self.respond(200, render_page(store.original(pid, parts[4]), number), "image/png")
+                        return
+                    else:
+                        raise KeyError("Page not found")
+                elif path == "/api/state" and not write:
                     result = store.state()
                 elif path == "/api/projects" and write:
                     result = store.create_setup(body.get("name"), body.get("actor"), body.get("template_id"))
