@@ -13,4 +13,4 @@ dependencies = ["pypdf>=6.10,<7", "pypdfium2>=5.13,<6", "Pillow>=10,<13"]
 where = ["src"]
 
 [tool.setuptools.package-data]
-construct_lab = ["app.html", "library.html", "review.html", "ocr.cjs"]
+construct_lab = ["app.html", "library.html", "review.html", "extract.html", "ocr.cjs"]
