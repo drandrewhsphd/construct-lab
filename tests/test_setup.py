@@ -160,7 +160,7 @@ class LocalServiceTests(unittest.TestCase):
         self.assertEqual(status, 200)
         status, exported = self.request(f"/api/projects/{new['id']}/export")
         self.assertEqual(status, 200)
-        self.assertEqual(exported["schema_version"], 3)
+        self.assertEqual(exported["schema_version"], 4)
         self.assertEqual(exported["literature"], [])
         self.assertEqual(exported["sources"], [])
 
