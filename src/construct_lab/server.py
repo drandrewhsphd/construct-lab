@@ -7,13 +7,14 @@ from pathlib import Path
 from urllib.parse import urlsplit, unquote
 
 from .library import LibraryStore, MAX_PDF, render_page
+from .review import ReviewStore
 from .store import Conflict
 
 
 def make_server(database, port=8765):
     database = Path(database).resolve()
     database.parent.mkdir(parents=True, exist_ok=True)
-    store = LibraryStore(database)
+    store = ReviewStore(database)
     try:
         store.seed_curiosity()
     finally:
@@ -63,11 +64,23 @@ def make_server(database, port=8765):
                     body = raw if pdf_upload else json.loads(raw)
                     if not pdf_upload and not isinstance(body, dict):
                         raise ValueError("Expected a settings object")
-                if path in ("/", "/library") and not write:
-                    self.respond(200, Path(__file__).with_name("library.html" if path == "/library" else "app.html").read_bytes(), "text/html; charset=utf-8")
+                if path in ("/", "/library", "/review") and not write:
+                    page_file = {"/": "app.html", "/library": "library.html", "/review": "review.html"}[path]
+                    self.respond(200, Path(__file__).with_name(page_file).read_bytes(), "text/html; charset=utf-8")
                     return
-                store = LibraryStore(database)
-                if len(parts) >= 4 and parts[:2] == ["api", "projects"] and parts[3] == "papers":
+                store = ReviewStore(database)
+                if len(parts) in (4,5) and parts[:2] == ["api", "projects"] and parts[3] == "passages":
+                    pid = parts[2]
+                    if len(parts) == 4 and not write:
+                        result = store.passages(pid)
+                    elif len(parts) == 4 and write:
+                        result = {"id": store.propose_passage(pid, body.get('document'), body.get('page'), body.get('revision'), body.get('digest'), body.get('start'), body.get('end'), body.get('quote'), body.get('category'), body.get('interpretation'), body.get('actor'))}
+                    elif len(parts) == 5 and write:
+                        store.review_passage(pid, parts[4], body.get('version'), body.get('decision'), body.get('category'), body.get('interpretation'), body.get('reviewer'), body.get('rationale'), body.get('original_checked'), body.get('corrected_quote',''))
+                        result = {"saved": True}
+                    else:
+                        raise KeyError('Page not found')
+                elif len(parts) >= 4 and parts[:2] == ["api", "projects"] and parts[3] == "papers":
                     pid = parts[2]
                     if len(parts) == 4:
                         result = store.import_pdf(pid, body, unquote(self.headers.get("X-Filename", "paper.pdf"))) if write else store.papers(pid)
@@ -76,6 +89,8 @@ def make_server(database, port=8765):
                     elif len(parts) == 6 and parts[5] == "pdf" and not write:
                         self.respond(200, store.original(pid, parts[4]), "application/pdf")
                         return
+                    elif len(parts) == 6 and parts[5] == "ocr" and write:
+                        result = store.ocr_page(pid, parts[4], body.get('page'), body.get('expected_revision'), body.get('actor'))
                     elif len(parts) == 7 and parts[5] == "pages" and not write:
                         paper = store.paper(pid, parts[4])
                         number = int(parts[6])
