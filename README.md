@@ -6,13 +6,13 @@ No definition or evidence has been preapproved.
 
 ## Current status
 
-Working local project setup and PDF library application with persistent settings, version history,
+Working local project setup, PDF library, OCR and passage-review application with persistent settings, version history,
 and reusable templates. Curiosity is created on the first launch with its research
 choices left open. This is not yet a deployed or study-ready application.
 
 The underlying research record library also includes source passages, proposed
 claims, explicit review, versioned definition approval, and an exportable event
-history. Its evidence and definition operations are not yet exposed in the new UI.
+history. Passage evidence review is available in the UI; definition approval remains a library operation.
 Tests use synthetic fixtures only.
 
 ## Open the application
@@ -52,7 +52,7 @@ versions, which can coexist without being silently merged.
 Page locators are **PDF file page numbers**, not printed journal page numbers.
 Pages with fewer than 80 alphabetic characters are flagged for visual inspection;
 this is a heuristic, not an OCR or quality assessment. Empty/image/scanned pages and
-text extraction failures are visible. **OCR is not implemented yet.** Tables,
+text extraction failures are visible. Local OCR is available through **OCR & passage review**. Tables,
 columns, symbols and reading order require checking even when text is available.
 Extraction runs in a separate process with a one-minute timeout, page/text limits,
 and a worker memory cap on Linux. This is a local trusted-user application, not a
@@ -89,6 +89,34 @@ The interface in `docs/interface-prototype.html` is the earlier interactive desi
 prototype. Its services are simulated. It is not connected to the persistence layer.
 The proposed production behavior is in `docs/interface-specifications.md`.
 
+## OCR and passage review
+
+Open **OCR & passage review** from the library. For local English OCR, install
+Node.js and run `npm install` once in this repository. The worker uses Tesseract.js;
+its first run downloads the English language model into `data/ocr-tools/`. PDF
+content stays on this computer. A native `tesseract` executable with English data
+can also be used when Node is unavailable. `CONSTRUCT_LAB_NODE` optionally specifies
+the Node executable. Ordinary import and passage review do not require OCR tools.
+
+1. Select a paper and enter your name in **Recorded by**.
+2. Run OCR on one page or the remaining flagged pages. Stop takes effect after the
+   current page. Each result is an unreviewed version; original text and PDFs remain intact.
+3. Highlight a passage in the page text and choose **Use selected passage**.
+4. Classify it as a definition, dimension, boundary, antecedent, consequence,
+   measurement or other evidence. Add your interpretation and save the proposal.
+5. Choose **Review passage**, compare it with the displayed original, and record
+   an accepted, rejected or unresolved decision with your name and rationale.
+   Acceptance requires confirming that you checked the original. An optional
+   corrected transcription preserves the initially selected text in the history.
+
+Accepted passages create verified evidence claims; saving a proposal alone does
+not. Accepted and rejected decisions are final in this interface; unresolved
+proposals can be revisited. Passage records preserve the PDF hash, citation snapshot,
+PDF page, text version and character offsets. Later OCR does not rewrite a saved
+passage. Project exports include passages and OCR history, but not original PDF bytes.
+OCR errors, columns, symbols and reading order still require human checking.
+No AI extraction is connected yet.
+
 ## Run the checks
 
 Python 3.9 or later and the project dependencies above are required.
@@ -101,7 +129,8 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 1. Complete: project setup, reusable templates, version history, PDF batch import,
    original-page previews, citation review and page-level text extraction.
-2. Add OCR for scanned papers, passage selection and reviewed AI extraction.
+2. Complete: local English OCR, source-linked passage selection and human review.
+   Next: connect AI-assisted extraction, retaining the same explicit review gate.
 3. Implement full construct proposals, materiality review, and version comparison.
 4. Implement evaluable evidence batches, configurable gates and challenge records.
 5. Add collaborator authentication, roles, access control and deployment.
