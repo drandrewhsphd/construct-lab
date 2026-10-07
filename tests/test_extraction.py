@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch, MagicMock
-from construct_lab.extraction import Connection, ExtractionStore, complete
+from construct_lab.extraction import Connection, ExtractionStore, complete, selected_span
 from test_library import fixture
 
 class ExtractionTests(unittest.TestCase):
@@ -13,7 +13,7 @@ class ExtractionTests(unittest.TestCase):
         self.page=self.s.paper(self.p,self.d)['pages'][0]
         self.body=dict(actor='Researcher',focus='Curiosity',page=1,revision=0,digest=self.page['text_hash'],consent=True,connection_id='test-connection')
         self.config=dict(provider='openai',endpoint='https://api.openai.com/v1',model='test-model',key='secret-test-key',connection_id='test-connection')
-        self.item=dict(quote=self.page['text'][:40],category='definition',interpretation='Synthetic interpretation only')
+        self.item=dict(start_line=1,end_line=1,category='definition',interpretation='Synthetic interpretation only')
     def tearDown(self):
         self.s.close();self.tmp.cleanup()
     def extract(self, items=None):
@@ -33,7 +33,7 @@ class ExtractionTests(unittest.TestCase):
         self.body['focus']='Another focus';result,_=self.extract()
         self.assertEqual(result['record']['passages'],[])
     def test_invalid_proposals_skipped(self):
-        result,_=self.extract([dict(self.item,quote='This quotation was invented'),dict(self.item,category='verified'),42])
+        result,_=self.extract([dict(self.item,start_line=999),dict(self.item,category='verified'),42])
         self.assertEqual(self.s.passages(self.p),[]);self.assertEqual(len(result['record']['skipped']),3)
     def test_failure_and_retry(self):
         with patch('construct_lab.extraction.complete',side_effect=ValueError('Provider unavailable')):
@@ -63,13 +63,22 @@ class ExtractionTests(unittest.TestCase):
         for bad in ('http://example.com/v1','https://user:pass@example.com/v1','https://example.com/v1?key=secret'):
             with self.assertRaises(ValueError):c.configure(dict(self.config,provider='compatible',endpoint=bad))
         with self.assertRaises(ValueError):c.configure(dict(self.config,provider='local',endpoint='http://example.com/v1'))
+    def test_line_ranges_preserve_ocr_and_repeated_text(self):
+        text = "depriva-\ntion asa state.\nRepeated text.\nRepeated text.\n"
+        start,end,q=selected_span(text,dict(start_line=1,end_line=2))
+        self.assertEqual(q,"depriva-\ntion asa state.\n")
+        self.assertEqual(text[start:end],q)
+        start,end,q=selected_span(text,dict(start_line=4,end_line=4))
+        self.assertEqual(start,text.rindex('Repeated'))
+        for first,last in [(0,1),(True,1),(2,1),(1,99)]:
+            with self.assertRaises(ValueError):selected_span(text,dict(start_line=first,end_line=last))
     def test_transport(self):
         response=MagicMock();response.__enter__.return_value=response
         response.read.return_value=json.dumps({'choices':[{'finish_reason':'stop','message':{'content':json.dumps({'passages':[self.item]})}}],'model':'test-model'}).encode()
         opener=MagicMock();opener.open.return_value=response
         with patch('construct_lab.extraction.build_opener',return_value=opener):result,_=complete(self.config,'Focus',self.page['text'])
         request=opener.open.call_args.args[0];payload=json.loads(request.data)
-        self.assertFalse(payload['store']);self.assertEqual(payload['response_format']['type'],'json_object')
+        self.assertFalse(payload['store']);self.assertEqual(payload['response_format']['type'],'json_schema')
         self.assertEqual(result['passages'][0],self.item)
         response.read.return_value=b'{"choices":[{"finish_reason":"length"}]}'
         with patch('construct_lab.extraction.build_opener',return_value=opener):
