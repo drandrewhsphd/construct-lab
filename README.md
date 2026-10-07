@@ -138,8 +138,10 @@ separate from signing into ChatGPT or GitHub.
 
 Each request examines one PDF page (80–30,000 characters), with at most eight
 suggestions and 4,000 output tokens. The focus is editable for every project.
-Returned quotations must uniquely match a contiguous span of the saved page;
-invalid quotations, invalid categories and duplicates are skipped with reasons.
+The model selects numbered source-line ranges; the application copies exact
+quotations from those ranges, preserving OCR artifacts and offsets. OpenAI uses
+a strict output schema for line IDs and the allowed categories. Invalid ranges,
+invalid categories and duplicates are skipped with reasons.
 Exact repeated requests reuse completed results. Failed requests can be retried
 manually; timeouts may still be charged. Runs interrupted by server restart are
 marked interrupted. Page changes during a request prevent saving stale proposals.
@@ -152,7 +154,21 @@ quotation can still be misinterpreted. Empty results do not establish saturation
 Project JSON exports include extraction history (schema 5); API keys are excluded.
 The automated provider tests use synthetic responses. A real provider requires
 credentials and an explicitly authorized live run; no live accuracy claim is made.
-This release does not perform cross-paper synthesis or automatic full-corpus runs.
+Choose **Whole paper / page range** to process eligible pages sequentially. The
+scope notice lists the paper, eligible count, destination and excluded pages before
+you authorize transmission. Stop takes effect after the current page. The batch
+stops on its first error, preserving earlier results. Keep the tab open; closing
+it stops scheduling further pages, although an in-flight request may finish.
+To resume, select the same range, focus and model: the server reuses completed
+page runs without another provider request. Text shorter than 80 or longer than
+30,000 characters is excluded visibly. The page selector previews individual
+pages even when the batch covers the whole range.
+
+The passage-review screen includes an approved-evidence matrix by paper and
+category. Click a count to filter to those accepted source passages. Counts are
+passage records, not independent findings or saturation measures. This comparison
+view makes no automated agreement, contradiction or construct-definition claims.
+Cross-paper AI synthesis and automatic full-corpus runs remain future work.
 
 ## Run the checks
 
