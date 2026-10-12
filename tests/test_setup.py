@@ -147,7 +147,13 @@ class LocalServiceTests(unittest.TestCase):
     def test_browser_endpoints_round_trip_and_export(self):
         status, html = self.request("/")
         self.assertEqual(status, 200)
-        self.assertIn(b"Research brief", html)
+        self.assertIn(b"Welcome to Construct Lab", html)
+        status, setup = self.request("/setup")
+        self.assertIn(b"Research brief", setup)
+        self.assertIn(b'/shell.js', setup)
+        status, navigation = self.request("/api/navigation")
+        self.assertEqual(status, 200)
+        self.assertTrue(navigation["projects"])
         _, state = self.request("/api/state")
         pid = state["projects"][0]["id"]
         status, result = self.request(f"/api/projects/{pid}/settings", dict(
