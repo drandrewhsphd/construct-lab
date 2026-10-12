@@ -88,7 +88,9 @@ def make_server(database, port=8765):
                     name = path.rsplit('/', 1)[-1]
                     if name not in ('organization-science-proposal.docx', 'construct-lab-technical-supplement.docx') or path != '/submission/' + name:
                         raise KeyError('Document not found')
-                    self.respond(200, (Path(__file__).with_name('submission') / name).read_bytes(), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+                    document = Path(__file__).with_name('submission') / name
+                    if not document.is_file(): raise KeyError('Research drafts are distributed separately from this software release')
+                    self.respond(200, document.read_bytes(), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
                     return
                 store = ResearchLoopStore(database)
                 if path == '/walkthrough' and not write:
