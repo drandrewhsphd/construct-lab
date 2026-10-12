@@ -1,0 +1,52 @@
+CONSTRUCT LAB — INSTALL FIRST (12 October 2026, v0.2.0 / research-loop-1)
+
+This source package accompanies Construct_Lab_Coauthor_Walkthrough.pptx.
+It contains the current application and an optional immersiveness demonstration.
+It does not contain the owner's database, Curiosity project, original PDFs or credentials.
+The demonstration includes fictional cases, provisional analyst judgments and a synthetic evaluation record. Its empirical evaluation is only a plan.
+
+MAC INSTALLATION
+1. Extract the ZIP. Move the construct-lab folder to a permanent location, e.g. Documents.
+2. Install a supported Python 3 release from https://www.python.org/downloads/ (select an official macOS installer). Complete the installer; if it supplies Install Certificates.command, run it.
+3. Open Terminal (Command+Space, type Terminal, press Return).
+4. Type cd followed by a space. Drag the extracted construct-lab folder from Finder into Terminal. Press Return.
+5. Enter these lines individually, pressing Return after each:
+
+python3 --version
+python3 -m venv .venv
+.venv/bin/python -m pip install -e .
+
+6. Optional but recommended BEFORE launching: load the demonstration:
+
+.venv/bin/python scripts/load_immersiveness_demo.py
+
+7. Start:
+
+.venv/bin/python scripts/launch_app.py
+
+8. The browser opens http://127.0.0.1:8780/. Choose Immersiveness. Click Co-author walkthrough. No API key is needed to inspect this demonstration.
+
+REOPEN
+Double-click Open Construct Lab.command in Finder, or repeat step 7 from Terminal in the same folder. The .command launcher uses this folder's virtual environment; do not move only the launcher. If macOS prevents opening it, use the Terminal command; do not disable security settings.
+Closing a browser tab does not stop the server. Restart Construct Lab.command restarts this app after code updates. It creates a backup before restarting the verified server.
+
+NEW RESEARCH
+Use Create / manage projects, save the construct and research scope, import your own authorized PDFs, verify passages, then create a definition with its evidence. Existing examples do not transfer as evidence to a new domain.
+
+OPTIONAL OCR
+Text PDFs do not require Node. For scanned PDFs install Node.js from https://nodejs.org/, then run npm install in this folder. The OCR engine is local; first use can download English language data. Native Tesseract is a fallback when Node is absent. Review OCR against the page image.
+
+AI CONNECTION
+In Extract select a provider/model, enter your own API key privately, and choose Use this connection. Select a document/page and focus. Only authorize extraction after reviewing the selected text and transmission notice. External provider usage may incur charges; provider keys are not included or stored in this package. Local compatible models require a separately installed running service.
+
+BACKUPS
+Use Backup & recovery > Create backup now. Keep both the .sqlite backup and matching .json checksum outside this folder. Startup also backs up an existing database when starting a new server. A backup contains ALL local projects and PDF bytes. Project JSON export is not a full restorable backup. Restore replaces ALL projects: restart the computer to stop the background server, then use the restore launcher BEFORE opening the app; retain the automatically created safety copy.
+
+PLATFORMS AND LIMITS
+macOS is the demonstrated environment. Python 3.12 was used for validation; metadata declares >=3.9, but other versions were not verified here. Linux is a portability target, not a tested release. Native Windows is unsupported because backup locking imports fcntl. Do not expose this unauthenticated local server to a network. Each researcher has an independent database; no team synchronization exists.
+
+GITHUB
+The public repository is https://github.com/drandrewhsphd/construct-lab. Download the tagged v0.2.0 release. No private databases, PDFs or credentials are distributed.
+
+NEW AI RESEARCH LOOP
+Choose a project, then AI research loop. Enter your name and focus. Select sources. Configure a provider/model privately under Configure an AI connection, or select Synthetic demonstration (no AI). Preview exact inputs, authorize, and run. Inspect and edit proposals, enter a rationale, then Accept for development. Choose the next stage and the accepted preceding run. After planning, inspect and add new evidence before revision. Acceptance is not scientific validation.

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "construct-lab"
-version = "0.1.0"
+version = "0.2.0"
 description = "Evidence and human decision records for construct development"
 requires-python = ">=3.9"
 dependencies = ["pypdf>=6.10,<7", "pypdfium2>=5.13,<6", "Pillow>=10,<13"]
@@ -13,4 +13,4 @@ dependencies = ["pypdf>=6.10,<7", "pypdfium2>=5.13,<6", "Pillow>=10,<13"]
 where = ["src"]
 
 [tool.setuptools.package-data]
-construct_lab = ["app.html", "library.html", "review.html", "extract.html", "ocr.cjs"]
+construct_lab = ["research-loop.html", "app.html", "library.html", "review.html", "extract.html", "ocr.cjs", "definitions.html", "learning.html", "coding.html", "coding-guide.html", "dashboard.html", "rounds.html", "novelty.html", "saturation.html", "demonstration.html", "home.html", "shell.js", "maintenance.html", "etymology.html", "walkthrough_content.json", "submission/*.docx", "submission/*.json"]
