@@ -1,0 +1,115 @@
+{
+  "title": "From word histories to testable organizational constructs",
+  "thesis": "Construct Lab proposes a human-directed method for generating and challenging construct definitions. Its scientific claim is that documented semantic alternatives, explicit counterexamples and recoverable revisions can improve theoretical discrimination. A clickable workflow and a polished definition do not establish that claim; comparison with skilled prompting must.",
+  "call": "Organization Science seeks AI-enabled advances in research practice, including human-directed research loops, reusable infrastructure, theory building and work on AI's limits. Stage 1 requests about 3–5 pages / 1,500–2,000 words plus references, a technical supplement and a prototype/repository by November 1, 2026. Review criteria include novelty, feasibility, auditability, ethicality, reproducibility, scalability and adoption. This mapping is our interpretation of fit, not an editorial endorsement.",
+  "steps": [
+    {
+      "title": "Define the organizational problem",
+      "action": "Start with work episodes: a manager reconciles a spreadsheet, an employee learns in a simulation, or a team works in a shared digital environment. Decide whether the question concerns environmental capacity, individual experience or a relation between the two.",
+      "example": "Candidate A concerns sensory enclosure; B concerns sustained attention; C concerns experiential framing capacity. B2 later specifies a proposed experienced state. These are competing conceptual directions, not interchangeable measures of one established construct.",
+      "fit": "Theory building · organizational relevance",
+      "why": "Our intended advance is a better account of how work environments shape experience and responsiveness. A new label without explanatory consequences would be insufficient.",
+      "prompt": "A skilled researcher can ask a model to separate levels of analysis. The platform records each candidate and its boundaries; the test is whether teams actually avoid level confusion in later predictions and measures.",
+      "limit": "Immersion has a substantial related literature. The pilot is not evidence that we invented a previously unstudied construct.",
+      "kinds": ["definition"], "anchor": "heading"
+    },
+    {
+      "title": "Document linguistic starting points",
+      "action": "Inspect the lexical sources, their dates, locators and limitations. Separate an attested passage from a dictionary's account of an earlier usage.",
+      "example": "The pilot uses American Heritage and Etymonline entries for immerse. Physical submergence and figurative engagement motivate contrasting possibilities. They do not make either possibility a necessary modern meaning.",
+      "fit": "Theory building · auditability",
+      "why": "We propose linguistic variation as an additional search route when disciplinary usage narrows the alternatives considered. This route is useful only if it produces defensible distinctions or useful refutations.",
+      "prompt": "Prompting can retrieve or invent plausible origins. The application keeps a source and a separate interpretive bridge. A comparison should measure unsupported source claims and independently useful alternatives, not the number of etymologies generated.",
+      "limit": "Two dictionaries can repeat the same ancestry. They are not two independent confirmations. Historical archive retrieval and multilingual source validation are not automated here.",
+      "kinds": ["source", "interpretation"], "anchor": "heading"
+    },
+    {
+      "title": "Compare historical scholarly definitions",
+      "action": "Compare the candidate with a dated scholarly account and identify retained meaning, changes, exclusions and reasons.",
+      "example": "The saved Slater and Wilbur comparison distinguishes a technological account of immersion from the person-level B candidate and the relational C candidate. Its source record states that it was based on the publisher abstract.",
+      "fit": "Theory building · reproducibility",
+      "why": "Our contribution requires demonstrating that a proposed difference is substantive and correctly situated in prior work. Historical comparison can also show that a candidate should be dropped as redundant.",
+      "prompt": "A model can write this comparison. Versioned source links make the exact comparison inspectable later. A manual prompt-and-ledger workflow may match this benefit and belongs in the comparison.",
+      "limit": "The pilot is not a comprehensive history. Immersion, immersiveness, presence, flow and cognitive absorption cannot be equated through word similarity.",
+      "kinds": ["historical", "comparison"], "anchor": "comparisonPanel"
+    },
+    {
+      "title": "Specify antecedents and outcomes",
+      "action": "For each proposed relationship, inspect the mechanism, prediction, competing explanation and a discriminating test.",
+      "example": "Coherence is a proposed antecedent; external demands a proposed moderator; detection of outside signals a proposed outcome. Workload and familiarity are rival explanations. Missed signals cannot both define the state and validate it.",
+      "fit": "Theory building · credible inference",
+      "why": "This is where a semantic possibility becomes a theoretical claim with potential organizational consequences. We must show that the method improves testable relationships, not merely plausible prose.",
+      "prompt": "Prompting readily proposes antecedents and outcomes. The platform preserves the inferential chain and rival tests. The evaluation asks independent judges whether the predictions distinguish explanations and survive counterevidence.",
+      "limit": "All pilot relationships are conjectures. No causal estimates, validated network or automatic edge-discovery algorithm exist for this pilot.",
+      "kinds": ["relationship"], "anchor": "heading"
+    },
+    {
+      "title": "Challenge definitions with boundary cases",
+      "action": "Open the case matrix. Inspect original book, simulation and spreadsheet cases, contrasting pairs, and mixed-feature cases. Preserve uncertain judgments.",
+      "example": "The original spreadsheet description lacks enough information to apply B2. Added development cases separate sustained attention from absorption and peripheral awareness. Their expected labels follow the candidate's stipulated boundaries.",
+      "fit": "Research loops · critical evaluation",
+      "why": "Our mechanism is disciplined challenge: a definition must expose situations that would distinguish it from a rival or undermine one of its proposed requirements.",
+      "prompt": "A model can generate adversarial cases and judge them. The same model can also write cases that make its preferred definition look good. The decisive comparison uses independently authored cases or observed episodes unavailable during development.",
+      "limit": "These are assistant-authored development examples, not held-out observations. Agreement on them is not construct validity.",
+      "kinds": ["case"], "anchor": "boundary"
+    },
+    {
+      "title": "Turn uncertainty into an evidence task",
+      "action": "Inspect a task's unresolved question, search plan, findings and resolution. Follow the findings back to their sources.",
+      "example": "The spreadsheet task prompted examination of work on experienced immersion and cognitive absorption. The sources motivate investigating distinctions; neither establishes B2's validity or the status of the original spreadsheet case.",
+      "fit": "Research loops · auditability",
+      "why": "A useful research loop makes uncertainty direct the next inquiry. A finding must be able to change the candidate or leave the question unresolved.",
+      "prompt": "A chat can recommend further reading. The system connects a task to an exact assessment and candidate version. Test whether this reduces forgotten questions, unsupported closures and missed disconfirming evidence after a team handoff.",
+      "limit": "Search planning is implemented; the linguistic workspace does not autonomously execute searches. Humans and assistants currently gather and enter the findings.",
+      "kinds": ["task", "finding"], "anchor": "tasks"
+    },
+    {
+      "title": "Revise the candidate without erasing history",
+      "action": "Compare B and B2, read the stated rationale and inspect the judgments affected. Distinguish a revised candidate from an approved or validated construct.",
+      "example": "B2 adds experiential absorption and reduced peripheral awareness to sustained engagement. The original B and its judgments remain available. A case can be included under B and excluded or uncertain under B2 without a recording error.",
+      "fit": "Auditability · reproducibility",
+      "why": "Recoverable revisions let another researcher reconstruct why a theoretical claim changed and ask whether the change follows the evidence or protects a preferred claim.",
+      "prompt": "A meticulous prompt user can keep the same history. The application enforces version references and records rationales. Its incremental value must be measured against that strong manual baseline, especially across revisions and handoffs.",
+      "limit": "A version log is not a tamper-proof external registry. Immediate outdated links are flagged; the system does not certify every downstream scientific implication.",
+      "kinds": ["revision"], "anchor": "revisions"
+    },
+    {
+      "title": "Freeze a protocol and run an independent evaluation",
+      "action": "Inspect the frozen B-versus-B2 protocol and the two run modes. Open the empirical plan to see what remains unassigned; open the demonstration to see how records connect.",
+      "example": "The empirical run has no participant data. The demonstration has fictional records. The proposed study separates concept elicitation, measurement development and a preregistered confirmation using new participants and materials.",
+      "fit": "Feasibility · credible inference · ethicality",
+      "why": "The prototype makes a proposed claim executable and inspectable. Scientific benefit requires independent evidence beyond the authoring loop.",
+      "prompt": "A chat can draft a protocol and synthetic results. The application separates run modes and freezes links. It does not create independent reviewers, consent, reliable measurement or external registration.",
+      "limit": "Reviewer exposure is recorded, not enforced. Blinded collection must currently occur outside this shared local workspace. No power calculation or confirmatory thresholds have been finalized.",
+      "kinds": ["protocol", "run"], "anchor": "runs"
+    },
+    {
+      "title": "Evaluate closure without claiming universal saturation",
+      "action": "Distinguish conceptual stability from stability of proposed relationships. Read the proposed stopping design in the supplement before treating a plateau as a reason to stop.",
+      "example": "The app has evidence-round stopping support for the literature workflow. It does not yet connect all etymological candidates, boundary cases and relationship challenges into a validated joint rule.",
+      "fit": "Critical evaluation · research loops",
+      "why": "Our proposed advance is calibrated closure within a declared search scope, with a reopening rule when new evidence changes a definition or relationship. Model repetition is an inadequate signal.",
+      "prompt": "A model can repeatedly answer that no new ideas remain. Compare stopping decisions against later independently collected challenge evidence. Premature closure, not apparent confidence, is the relevant failure.",
+      "limit": "No etymological R-squared or universal saturation score is supported. The current default round thresholds are illustrative decision support, not validated scientific cutoffs.",
+      "kinds": [], "anchor": "runs"
+    },
+    {
+      "title": "Expose the complete claim and evidence trail",
+      "action": "Open a run-summary report. Check its mode, frozen protocol, reviewer exposure, observations, conclusions, deviations and exact referenced versions.",
+      "example": "The completed demonstration proves that the recording path can be exercised. It does not show that B2 is correct or that Construct Lab beats prompting. The empty empirical plan remains visibly empty.",
+      "fit": "Reusable infrastructure · auditability · adoption",
+      "why": "An independent team should be able to inspect, reproduce and challenge the process. The report is an interface to that process; the submission must also provide an accessible research artifact.",
+      "prompt": "Prompting can write a persuasive final report. Compare the accuracy of the reconstructed reasoning and the recovery of unresolved objections after a co-author handoff. Do not equate prettier presentation with better science.",
+      "limit": "The repository is intended to remain private unless the owner changes access. Reviewer access, a clean release and a shareable data package still need preparation.",
+      "kinds": ["run", "result"], "anchor": "runs"
+    }
+  ],
+  "comparison": [
+    ["A  Skilled prompting", "Same model, sources, retrieval tools and resource budget; iterative critique and saved transcripts permitted. Experts may use their best prompts.", "Strong practical baseline; do not handicap it with a single prompt."],
+    ["B  Prompting plus manual protocol", "Arm A plus the same structured method and a spreadsheet or document ledger; etymology included.", "B versus A estimates the method and documentation package; full system versus B estimates software's incremental contribution."],
+    ["C  Platform without linguistic expansion", "Versioned workflow with literature and historical scholarly definitions; omit the added word-history branch.", "Full system versus C estimates the incremental value of the linguistic branch within this platform."],
+    ["D  Full Construct Lab", "Same model and budget with linguistic expansion, rival definitions, boundary challenges and versioned evidence tasks.", "D versus A evaluates the bundle. D versus B and C test whether software and etymology justify separate claims."]
+  ],
+  "verdict": "If skilled prompting matches the platform on independent theoretical quality, report that result. If a manual ledger matches it, claim an implementation or usability benefit only where measured. If linguistic expansion adds no useful distinctions or introduces misleading ones, revise or remove that branch. A process contribution remains possible, but software uniqueness and superior science must not be assumed.",
+  "next": "Read the five-page proposal first. Then use this walkthrough with the skeptical co-author and ask them to help specify the strongest prompting baseline. Before submission, agree on authorship, evaluation scope and repository access; finalize a clean reproducible artifact. No new pilot coding is required to review this package."
+}

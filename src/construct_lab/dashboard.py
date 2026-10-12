@@ -1,0 +1,14 @@
+"""Descriptive synthesis diagnostics; counts never establish saturation."""
+from collections import Counter
+from .coding import CodingStore
+
+class DashboardStore(CodingStore):
+ def dashboard(self,project):
+  w=self.workspace(project);c=self.coding(project);learning=self.learning(project)
+  passages={p['id']:p for p in c['passages']};records=c['records'];rows=[]
+  for r in records:
+   p=passages.get(r['passage']);v=r['content'];h=r['history'][0] if r['history'] else {}
+   demo='workflow demonstration' in (h.get('actor','')+' '+h.get('reason','')+' '+v.get('rationale','')).lower()
+   rows.append(dict(id=r['id'],passage=r['passage'],code=v['code'],level=v['level'],status=v['status'],demonstration=demo,stale=p is None or v['passage_version']!=p['version'] or v['definition_version']!=w['project']['version'],interpretation=p['interpretation'] if p else 'Source no longer accepted',document=p['document'] if p else None,page=p['page'] if p else None,rationale=v['rationale'],actor=h.get('actor',''),changes=max(0,len(r['history'])-1)))
+  questions=learning['questions'];unresolved=[q for q in questions if q['status']!='resolved'];covered={r['passage'] for r in records};uncoded=len(set(passages)-covered)
+  return dict(project=w['project'],approved=w['history'][0] if w['history'] else None,records=rows,questions=questions,counts=dict(papers=len(learning['papers']),accepted=len(passages),coded=len(rows),uncoded=uncoded,reviewed=sum(r['status']=='reviewed' for r in rows),demonstration=sum(r['demonstration'] for r in rows),stale=sum(r['stale'] for r in rows),unresolved=len(unresolved)),distribution=[dict(level=l,code=k,count=n) for (l,k),n in sorted(Counter((r['level'],r['code']) for r in rows).items())],saturation=dict(status='Not established',explanation='Coding completion is not theoretical saturation. These diagnostics do not implement a validated stopping rule.',dimensions=[dict(name='Construct definition',status='Approved version available' if w['history'] else 'Missing',detail='Version history is available; stability across evidence rounds has not been assessed.'),dict(name='Evidence coverage',status='Incomplete' if uncoded else 'Current accepted passages coded',detail=f'{uncoded} accepted passages have no code. This does not measure coverage of the wider literature.'),dict(name='Theoretical gaps',status=f'{len(unresolved)} unresolved',detail='Open, investigating and deferred questions remain visible until resolved with evidence.'),dict(name='Coding validation',status='Not established',detail='Reviewed is a workflow state. Demonstration reviews do not establish independent agreement or validity.'),dict(name='New-evidence yield',status='Not measured',detail='No successive evidence-round novelty estimates or stopping thresholds are recorded.'),dict(name='Contradictions and boundaries',status='Requires assessment',detail='Consult the approved boundaries and disagreements below; resolution is not inferred from counts.')]))
