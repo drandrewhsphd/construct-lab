@@ -15,6 +15,7 @@ MAC INSTALLATION
 python3 --version
 python3 -m venv .venv
 .venv/bin/python -m pip install -e .
+chmod +x *.command
 
 6. Optional but recommended BEFORE launching: load the demonstration:
 

@@ -9,6 +9,7 @@ Download the **v0.2.0 release**, extract it, and follow [INSTALL-FIRST.txt](INST
 ```sh
 python3 -m venv .venv
 .venv/bin/python -m pip install -e .
+chmod +x *.command
 .venv/bin/python scripts/load_immersiveness_demo.py
 .venv/bin/python scripts/launch_app.py
 ```
@@ -51,7 +52,7 @@ The research-loop proposals are maintained in their own reviewable workspace. Th
 
 Each run records selected evidence snapshots, prior accepted proposals, exact system instructions, schema and prompt version, provider/model, returned usage when available, original response, reviewed response and reviewer rationale. Source IDs validate linkage, not semantic entailment. Etymological analogy generates hypotheses; it cannot by itself validate modern meaning, antecedents, outcomes or causation.
 
-The bundled immersiveness example contains fictional boundary cases and provisional judgments. Historical submission drafts and walkthrough material are development artifacts, **not a validated journal submission or a measured comparison against prompting alone**. The contribution requires empirical evaluation against capable prompting baselines with equal evidence, model access and researcher effort.
+The bundled immersiveness example contains fictional boundary cases and provisional judgments. Historical walkthrough material is a development artifact; submission drafts are distributed separately. These are **not a validated journal submission or a measured comparison against prompting alone**. The contribution requires empirical evaluation against capable prompting baselines with equal evidence, model access and researcher effort.
 
 There is no automatic historical-dictionary crawler, autonomous full-text review, multi-user synchronization, empirical validation, or proven theoretical/nomological saturation. Each researcher has a separate local database. Original PDFs and private research data are not distributed.
 
